@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  clerkUserId String
+  name        String
+  color       String
+  icon        String
+  createdAt   DateTime  @default(now())
+  expenses    Expense[]
+
+  @@unique([clerkUserId, name])
+  @@index([clerkUserId])
+}
+
+model Expense {
+  id          String   @id @default(cuid())
+  clerkUserId String
+  categoryId  String
+  amount      Decimal  @db.Decimal(10, 2)
+  date        DateTime @db.Date
+  note        String?  @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  category    Category @relation(fields: [categoryId], references: [id])
+
+  @@index([clerkUserId])
+  @@index([clerkUserId, date])
+  @@index([categoryId])
+}
